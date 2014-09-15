@@ -1,7 +1,9 @@
-/**
- * バリデーションを行うjQueryプラグイン
- * @author s-tai
- */
+ /**
+  * jQuery autoValidation
+  * @author ShoheiTai
+  * @version 1.0
+  * @license <a href="http://en.wikipedia.org/wiki/MIT_License">X11/MIT License</a>
+  */
 ;(function($) {
     //INPUTのバリデーションを行うイベント。複数設定する場合はスペースで区切る。
     var VALIDATE_EVENT = 'keyup blur';
