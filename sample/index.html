@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>jQuery autoValidation sample</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.1/jquery.min.js"></script>
+    <script src="../jquery.autoValidation.min.js"></script>
+    <style>
+      label {display: inline-block;width: 80px;}
+      input[type="text"] {width: 250px;}
+      .error {color:red;}
+    </style>
+    <script>
+    $(function() {
+      $('#validation').autoValidation({
+        '#username' : {
+          'required' : {},
+          'alphanumeric' : {}
+        },
+        '#age' : {
+          'number' : {}
+        },
+        '#email' : {
+          'email' : {}
+        },
+        '#password' : {
+          'required' : {},
+          'between' : {'min' : 6, 'max' : 12},
+          'alphanumeric' : {}
+        },
+        '#password-conf' : {
+          'required' : {},
+          'equals' : {'target' : '#password', 'name' : 'password'}
+        }
+      });
+    });
+
+    </script>
+  </head>
+  <body>
+    <form id="validation" action="./">
+      <label for="username">username:</label>
+      <input type="text" id="username" placeholder="alphanumeric and required">
+      <br/>
+      <label for="age">age:</label>
+      <input type="text" id="age" placeholder="numeric">
+      <br/>
+      <label for="email">email:</label>
+      <input type="text" id="email" placeholder="email">
+      <br/>
+      <label for="password">password:</label>
+      <input type="text" id="password" placeholder="between 6 and 12,alphanumeric,required">
+      <br/>
+      <label for="password-conf">password:</label>
+      <input type="text" id="password-conf" placeholder="equals password, required">
+      <br/>
+      <input type="submit" value="SUBMIT">
+    </form>
+  </body>
+</html>
