@@ -1,5 +1,5 @@
  /**
-  * jQuery autoValidation
+  * jQuery AutoValidation
   * @author ShoheiTai
   * @version 1.1.0
   * @license <a href="http://en.wikipedia.org/wiki/MIT_License">X11/MIT License</a>
