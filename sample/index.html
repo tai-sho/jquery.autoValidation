@@ -31,6 +31,12 @@
         '#password-conf' : {
           'required' : null,
           'equals' : {'target' : '#password', 'name' : 'password'}
+        },
+        '#pattern' : {
+          'pattern' : {'reg' : '^[a-zA-Z0-9]+$' }
+        },
+        '#my-rule' : {
+          'myrule1' : {'rule' : function(str) { return (str === 'cat' || str === 'dog'); }}
         }
       });
     });
@@ -54,6 +60,12 @@
       <label for="password-conf">password:</label>
       <input type="text" id="password-conf" placeholder="equals password, required">
       <br/>
+      <label for="pattern">alphanameric:</label>
+      <input type="text" id="pattern" placeholder="regular expression(alphanameric)">
+      <br>
+      <label for="my-rule">like:</label>
+      <input type="text" id="my-rule" placeholder="my rule(cat or dog)">
+      <br>
       <input type="submit" value="SUBMIT">
     </form>
   </body>

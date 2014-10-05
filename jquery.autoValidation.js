@@ -3,6 +3,7 @@
   * @author ShoheiTai
   * @version 1.0
   * @license <a href="http://en.wikipedia.org/wiki/MIT_License">X11/MIT License</a>
+  * @link https://github.com/tai-sho/jquery.autoValidation
   */
 ;(function($) {
     //INPUTのバリデーションを行うイベント。複数設定する場合はスペースで区切る。
@@ -36,7 +37,9 @@
             'num' : '数字で入力してください。',
             'between' : '#STR1#字以上#STR2#字以下で入力してください。',
             'nosame' : '#STR1#と内容が一致しません。',
-            '_nosame' : '値が一致しません。'
+            '_nosame' : '値が一致しません。',
+            'pattern' : '指定された形式と一致しません。',
+            'func' : '入力に誤りがあります'
     };
 
     var valid = {
@@ -124,7 +127,14 @@
              * @param str1 文字列1
              * @returns {Boolean}
              */
-            'isAlphanumeric' : function(str) {return (str.length === 0 || str.match(/^[a-zA-Z0-9]+$/));}
+            'isAlphanumeric' : function(str) {return (str.length === 0 || str.match(/^[a-zA-Z0-9]+$/));},
+            /**
+             * 正規表現によるチェックを行います。
+             * @param str 文字列
+             * @param reg 正規表現
+             * @returns {Boolean}
+             */
+            'pattern' : function(str, reg) {return (str.length === 0 || str.match(new RegExp(reg)));}
     };
 
     /**
@@ -191,17 +201,22 @@
         var txt = '';
         var str = $(this).val();
         var rules = e.data.rules;
-        //必須入力チェックを優先する
+        var requiredAllow = true;
+        //必須入力チェックが設定されている場合は優先する
         if(rules.required !== undefined) {
             if(!valid.isInputted(str)) {
+                // メッセージが設定されている場合
                 if(rules.required && rules.required.msg) {
                     txt = rules.required.msg;
                 } else {
                     txt = getErrorText('req');
                 }
+                requiredAllow = Boolean(txt);
             }
         }
-        if(!txt) {
+
+        // 必須チェックが設定されていない場合または必須チェックをクリアした場合
+        if(requiredAllow) {
             for(var rule in rules) {
                 if(rules[rule] && rules[rule]['msg']) {
                     txt = rules[rule]['msg'];
@@ -248,30 +263,43 @@
                             }
                         }
                         break;
+                    case 'pattern': //正規表現と一致するかどうかチェック reg
+                        if(!valid.pattern(str, rules[rule]['reg'])) {
+                            txt = txt ? txt : getErrorText('pattern');
+                        }
+                        break;
+                    default:
+                        if(typeof(rules[rule]['rule']) === 'function') {
+                            if(!(str.length === 0 || rules[rule]['rule'](str))) {
+                                txt = txt ? txt : getErrorText('func');
+                            }
+                        }
+                        break;
                     }
-                }
-                //パラメータが不要なルール
-                switch(rule) {
-                case 'alphanumeric': //半角英数字チェック
-                    if(!valid.isAlphanumeric(str)) {
-                        txt = txt ? txt : getErrorText('alphanumeric');
+                } else {
+                    //パラメータが不要なルール
+                    switch(rule) {
+                    case 'alphanumeric': //半角英数字チェック
+                        if(!valid.isAlphanumeric(str)) {
+                            txt = txt ? txt : getErrorText('alphanumeric');
+                        }
+                        break;
+                    case 'email': //アドレスチェック
+                        if(!valid.isMail(str)) {
+                            txt = txt ? txt : getErrorText('mail');
+                        }
+                        break;
+                    case 'kana': //カタカナチェック
+                        if(!valid.isFullKana(str)) {
+                            txt = txt ? txt : getErrorText('kana');
+                        }
+                        break;
+                    case 'name_kana': //カタカナ名前チェック
+                        if(!valid.isFullKanaName(str)) {
+                            txt = txt ? txt : getErrorText('kana');
+                        }
+                        break;
                     }
-                    break;
-                case 'email': //アドレスチェック
-                    if(!valid.isMail(str)) {
-                        txt = txt ? txt : getErrorText('mail');
-                    }
-                    break;
-                case 'kana': //カタカナチェック
-                    if(!valid.isFullKana(str)) {
-                        txt = txt ? txt : getErrorText('kana');
-                    }
-                    break;
-                case 'name_kana': //カタカナ名前チェック
-                    if(!valid.isFullKanaName(str)) {
-                        txt = txt ? txt : getErrorText('kana');
-                    }
-                    break;
                 }
             }
         }
@@ -284,9 +312,6 @@
         //設定
         for(var type in setting) {
             switch(type) {
-            case 'event'://イベント
-                VALIDATE_EVENT = setting[type];
-                break;
             case 'errorInputClass'://エラー入力項目のクラス
                 INPUT_ERROR_CLASS = setting[type];
                 break;
@@ -343,5 +368,6 @@
                 return false;
             }
         });
+        return this;
     };
 }) (jQuery);
