@@ -2,13 +2,14 @@
 <html>
   <head>
     <meta charset="UTF-8">
-    <title>jQuery autoValidation sample</title>
+    <title>jQuery AutoValidation sample</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.1/jquery.min.js"></script>
     <script src="../jquery.autoValidation.min.js"></script>
     <style>
       label {display: inline-block;width: 100px;}
       input[type="text"] {width: 250px;}
       .error {color:red;}
+      code {width:800px;display:block;background-color:#c0c0c0;}
     </style>
     <script>
     $(function() {
@@ -40,10 +41,43 @@
         }
       });
     });
-
     </script>
   </head>
   <body>
+    <h1>jQuery AutoValidation Samples</h1>
+    <pre>
+      <code>
+$(function() {
+  $('#validation').autoValidation({
+    '#username' : {
+      'required' : null,
+      'alphanumeric' : null
+    },
+    '#age' : {
+      'number' : {'pitch' : 'half'}
+    },
+    '#email' : {
+      'email' : null
+    },
+    '#password' : {
+      'required' : null,
+      'between' : {'min' : 6, 'max' : 12},
+      'alphanumeric' : null
+    },
+    '#password-conf' : {
+      'required' : null,
+      'equals' : {'target' : '#password', 'name' : 'password'}
+    },
+    '#pattern' : {
+      'pattern' : {'reg' : '^[a-zA-Z0-9]+$' }
+    },
+    '#my-rule' : {
+      'myrule1' : {'rule' : function(str) { return (str === 'cat' || str === 'dog'); }}
+    }
+  });
+});
+      </code>
+    </pre>
     <form id="validation" action="./">
       <label for="username">username:</label>
       <input type="text" id="username" placeholder="alphanumeric and required">
