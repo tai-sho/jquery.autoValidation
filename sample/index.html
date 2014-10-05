@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>jQuery autoValidation sample</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.1/jquery.min.js"></script>
-    <script src="../jquery.autoValidation.min.js"></script>
+    <script src="../jquery.autoValidation.js"></script>
     <style>
       label {display: inline-block;width: 80px;}
       input[type="text"] {width: 250px;}
@@ -14,22 +14,22 @@
     $(function() {
       $('#validation').autoValidation({
         '#username' : {
-          'required' : {},
-          'alphanumeric' : {}
+          'required' : null,
+          'alphanumeric' : null
         },
         '#age' : {
-          'number' : {}
+          'number' : {'pitch' : 'half'}
         },
         '#email' : {
-          'email' : {}
+          'email' : null
         },
         '#password' : {
-          'required' : {},
+          'required' : null,
           'between' : {'min' : 6, 'max' : 12},
-          'alphanumeric' : {}
+          'alphanumeric' : null
         },
         '#password-conf' : {
-          'required' : {},
+          'required' : null,
           'equals' : {'target' : '#password', 'name' : 'password'}
         }
       });

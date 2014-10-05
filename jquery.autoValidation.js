@@ -38,6 +38,7 @@
             'nosame' : '#STR1#と内容が一致しません。',
             '_nosame' : '値が一致しません。'
     };
+
     var valid = {
             /**
              * 値が入力されているかをチェックします。
@@ -191,9 +192,9 @@
         var str = $(this).val();
         var rules = e.data.rules;
         //必須入力チェックを優先する
-        if(rules.required) {
+        if(rules.required !== undefined) {
             if(!valid.isInputted(str)) {
-                if(rules.required.msg) {
+                if(rules.required && rules.required.msg) {
                     txt = rules.required.msg;
                 } else {
                     txt = getErrorText('req');
@@ -202,9 +203,54 @@
         }
         if(!txt) {
             for(var rule in rules) {
-                if(rules[rule]['msg']) {
+                if(rules[rule] && rules[rule]['msg']) {
                     txt = rules[rule]['msg'];
                 }
+                //パラメータが必要なルール
+                if(rules[rule]) {
+                    switch(rule) {
+                    case 'number': //数字チェック pitch
+                        switch(rules[rule]['pitch']) {
+                        case 'full': //全角
+                            if(!valid.isFullNum(str)) {
+                                txt = txt ? txt : getErrorText('full_num');
+                            }
+                            break;
+                        case 'half': //半角
+                            if(!valid.isHalfNum(str)) {
+                                txt = txt ? txt : getErrorText('half_num');
+                            }
+                        break;
+                        }
+                        break;
+                    case 'between': //範囲チェック min max
+                        if(!valid.isBetween(str, rules[rule]['min'], rules[rule]['max'])) {
+                            txt = txt ? txt : getErrorText('between', rules[rule]['min'], rules[rule]['max']);
+                        }
+                        break;
+                    case 'long': //値の上限チェック max
+                        if(!valid.isLong(str, rules[rule]['max'])) {
+                            txt = txt ? txt : getErrorText('long',rules[rule]['max']);
+                        }
+                        break;
+                    case 'short': //値の下限チェック min
+                        if(!valid.isShort(str, rules[rule]['min'])) {
+                            txt = txt ? txt : getErrorText('kana',rules[rule]['min']);
+                        }
+                        break;
+                    case 'equals': //値が同じかどうかチェック target name
+                        var _str = $(rules[rule]['target']).val();
+                        if(!valid.isSame(str, _str)) {
+                            if(rules[rule]['name']) {
+                                txt = txt ? txt : getErrorText('nosame', rules[rule]['name']);
+                            } else {
+                                txt = txt ? txt : getErrorText('_nosame');
+                            }
+                        }
+                        break;
+                    }
+                }
+                //パラメータが不要なルール
                 switch(rule) {
                 case 'alphanumeric': //半角英数字チェック
                     if(!valid.isAlphanumeric(str)) {
@@ -216,26 +262,6 @@
                         txt = txt ? txt : getErrorText('mail');
                     }
                     break;
-                case 'number': //数字チェック pitch
-                    switch(rules[rule]['pitch']) {
-                    case 'full': //全角
-                        if(!valid.isFullNum(str)) {
-                            txt = txt ? txt : getErrorText('full_num');
-                        }
-                        break;
-                    case 'half': //半角
-                    default:
-                        if(!valid.isHalfNum(str)) {
-                            txt = txt ? txt : getErrorText('half_num');
-                        }
-                        break;
-                    }
-                    break;
-                case 'between': //範囲チェック min max
-                    if(!valid.isBetween(str, rules[rule]['min'], rules[rule]['max'])) {
-                        txt = txt ? txt : getErrorText('between', rules[rule]['min'], rules[rule]['max']);
-                    }
-                    break;
                 case 'kana': //カタカナチェック
                     if(!valid.isFullKana(str)) {
                         txt = txt ? txt : getErrorText('kana');
@@ -244,26 +270,6 @@
                 case 'name_kana': //カタカナ名前チェック
                     if(!valid.isFullKanaName(str)) {
                         txt = txt ? txt : getErrorText('kana');
-                    }
-                    break;
-                case 'long': //値の上限チェック max
-                    if(!valid.isLong(str, rules[rule]['max'])) {
-                        txt = txt ? txt : getErrorText('long',rules[rule]['max']);
-                    }
-                    break;
-                case 'short': //値の下限チェック min
-                    if(!valid.isShort(str, rules[rule]['min'])) {
-                        txt = txt ? txt : getErrorText('kana',rules[rule]['min']);
-                    }
-                    break;
-                case 'equals': //値が同じかどうかチェック target name
-                    var _str = $(rules[rule]['target']).val();
-                    if(!valid.isSame(str, _str)) {
-                        if(rules[rule]['name']) {
-                            txt = txt ? txt : getErrorText('nosame', rules[rule]['name']);
-                        } else {
-                            txt = txt ? txt : getErrorText('_nosame');
-                        }
                     }
                     break;
                 }
@@ -313,12 +319,13 @@
         } else {
             console.error('the setting was not found.');
         }
+
         /**
          * フォームの送信前にバリデーション用のイベントを発生させ、チェックを行います。
          * グローバル変数で定義したエラーセレクタがdocumentに存在している場合は
          * エラーとし、送信を中断します。
          */
-        this.submit(function() {
+        this.bind('submit', function() {
             //バリデーション用イベントを発生させる
             var events = VALIDATE_EVENT.split(' ');
             $('form input').trigger(events[0]);
