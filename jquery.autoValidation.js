@@ -1,7 +1,7 @@
  /**
   * jQuery AutoValidation
   * @author ShoheiTai
-  * @version 1.1.0
+  * @version 1.1.1
   * @license <a href="http://en.wikipedia.org/wiki/MIT_License">X11/MIT License</a>
   * @link https://github.com/tai-sho/jquery.autoValidation
   */
@@ -211,95 +211,90 @@
                 } else {
                     txt = getErrorText('req');
                 }
-                requiredAllow = Boolean(txt);
+                requiredAllow = !Boolean(txt);
             }
         }
 
         // 必須チェックが設定されていない場合または必須チェックをクリアした場合
         if(requiredAllow) {
             for(var rule in rules) {
-                if(rules[rule] && rules[rule]['msg']) {
-                    txt = rules[rule]['msg'];
+                var mytxt = '';
+            	if(rules[rule] && rules[rule]['msg']) {
+            		mytxt = rules[rule]['msg'];
                 }
-                //パラメータが必要なルール
-                if(rules[rule]) {
-                    switch(rule) {
-                    case 'number': //数字チェック pitch
-                        switch(rules[rule]['pitch']) {
-                        case 'full': //全角
-                            if(!valid.isFullNum(str)) {
-                                txt = txt ? txt : getErrorText('full_num');
-                            }
-                            break;
-                        case 'half': //半角
-                            if(!valid.isHalfNum(str)) {
-                                txt = txt ? txt : getErrorText('half_num');
-                            }
-                        break;
-                        }
-                        break;
-                    case 'between': //範囲チェック min max
-                        if(!valid.isBetween(str, rules[rule]['min'], rules[rule]['max'])) {
-                            txt = txt ? txt : getErrorText('between', rules[rule]['min'], rules[rule]['max']);
-                        }
-                        break;
-                    case 'long': //値の上限チェック max
-                        if(!valid.isLong(str, rules[rule]['max'])) {
-                            txt = txt ? txt : getErrorText('long',rules[rule]['max']);
-                        }
-                        break;
-                    case 'short': //値の下限チェック min
-                        if(!valid.isShort(str, rules[rule]['min'])) {
-                            txt = txt ? txt : getErrorText('kana',rules[rule]['min']);
-                        }
-                        break;
-                    case 'equals': //値が同じかどうかチェック target name
-                        var _str = $(rules[rule]['target']).val();
-                        if(!valid.isSame(str, _str)) {
-                            if(rules[rule]['name']) {
-                                txt = txt ? txt : getErrorText('nosame', rules[rule]['name']);
-                            } else {
-                                txt = txt ? txt : getErrorText('_nosame');
-                            }
-                        }
-                        break;
-                    case 'pattern': //正規表現と一致するかどうかチェック reg
-                        if(!valid.pattern(str, rules[rule]['reg'])) {
-                            txt = txt ? txt : getErrorText('pattern');
-                        }
-                        break;
-                    default:
-                        if(typeof(rules[rule]['rule']) === 'function') {
-                            if(!(str.length === 0 || rules[rule]['rule'](str))) {
-                                txt = txt ? txt : getErrorText('func');
-                            }
-                        }
-                        break;
+                //パラメータが不要なルール
+                switch(rule) {
+                case 'alphanumeric': //半角英数字チェック
+                    if(!valid.isAlphanumeric(str)) {
+                        txt = mytxt ? mytxt : getErrorText('alphanumeric');
                     }
-                } else {
-                    //パラメータが不要なルール
-                    switch(rule) {
-                    case 'alphanumeric': //半角英数字チェック
-                        if(!valid.isAlphanumeric(str)) {
-                            txt = txt ? txt : getErrorText('alphanumeric');
-                        }
-                        break;
-                    case 'email': //アドレスチェック
-                        if(!valid.isMail(str)) {
-                            txt = txt ? txt : getErrorText('mail');
-                        }
-                        break;
-                    case 'kana': //カタカナチェック
-                        if(!valid.isFullKana(str)) {
-                            txt = txt ? txt : getErrorText('kana');
-                        }
-                        break;
-                    case 'name_kana': //カタカナ名前チェック
-                        if(!valid.isFullKanaName(str)) {
-                            txt = txt ? txt : getErrorText('kana');
-                        }
-                        break;
+                    break;
+                case 'email': //アドレスチェック
+                    if(!valid.isMail(str)) {
+                        txt = mytxt ? mytxt : getErrorText('mail');
                     }
+                    break;
+                case 'kana': //カタカナチェック
+                    if(!valid.isFullKana(str)) {
+                        txt = mytxt ? mytxt : getErrorText('kana');
+                    }
+                    break;
+                case 'name_kana': //カタカナ名前チェック
+                    if(!valid.isFullKanaName(str)) {
+                        txt = mytxt ? mytxt : getErrorText('kana');
+                    }
+                    break;
+                case 'number': //数字チェック pitch
+                    switch(rules[rule]['pitch']) {
+                    case 'full': //全角
+                        if(!valid.isFullNum(str)) {
+                            txt = mytxt ? mytxt : getErrorText('full_num');
+                        }
+                        break;
+                    case 'half': //半角
+                        if(!valid.isHalfNum(str)) {
+                            txt = mytxt ? mytxt : getErrorText('half_num');
+                        }
+                    break;
+                    }
+                    break;
+                case 'between': //範囲チェック min max
+                    if(!valid.isBetween(str, rules[rule]['min'], rules[rule]['max'])) {
+                        txt = mytxt ? mytxt : getErrorText('between', rules[rule]['min'], rules[rule]['max']);
+                    }
+                    break;
+                case 'long': //値の上限チェック max
+                    if(!valid.isLong(str, rules[rule]['max'])) {
+                        txt = mytxt ? mytxt : getErrorText('long',rules[rule]['max']);
+                    }
+                    break;
+                case 'short': //値の下限チェック min
+                    if(!valid.isShort(str, rules[rule]['min'])) {
+                        txt = mytxt ? mytxt : getErrorText('kana',rules[rule]['min']);
+                    }
+                    break;
+                case 'equals': //値が同じかどうかチェック target name
+                    var _str = $(rules[rule]['target']).val();
+                    if(!valid.isSame(str, _str)) {
+                        if(rules[rule]['name']) {
+                            txt = mytxt ? mytxt : getErrorText('nosame', rules[rule]['name']);
+                        } else {
+                            txt = mytxt ? mytxt : getErrorText('_nosame');
+                        }
+                    }
+                    break;
+                case 'pattern': //正規表現と一致するかどうかチェック reg
+                    if(!valid.pattern(str, rules[rule]['reg'])) {
+                        txt = mytxt ? mytxt : getErrorText('pattern');
+                    }
+                    break;
+                default:
+                    if(rules[rule] && typeof(rules[rule]['rule']) === 'function') {
+                        if(!(str.length === 0 || rules[rule]['rule'](str))) {
+                            txt = mytxt ? mytxt : getErrorText('func');
+                        }
+                    }
+                    break;
                 }
             }
         }
