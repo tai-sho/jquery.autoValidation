@@ -1,7 +1,7 @@
  /**
   * jQuery autoValidation
   * @author ShoheiTai
-  * @version 1.0
+  * @version 1.1.0
   * @license <a href="http://en.wikipedia.org/wiki/MIT_License">X11/MIT License</a>
   * @link https://github.com/tai-sho/jquery.autoValidation
   */
