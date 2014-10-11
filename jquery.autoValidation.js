@@ -219,8 +219,8 @@
         if(requiredAllow) {
             for(var rule in rules) {
                 var mytxt = '';
-            	if(rules[rule] && rules[rule]['msg']) {
-            		mytxt = rules[rule]['msg'];
+                if(rules[rule] && rules[rule]['msg']) {
+                    mytxt = rules[rule]['msg'];
                 }
                 //パラメータが不要なルール
                 switch(rule) {
