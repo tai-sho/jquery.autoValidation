@@ -329,6 +329,9 @@
                 } else if(setting[type]['msg']) {
                     msg.master = setting[type]['msg'];
                 }
+            case 'validateEvent':
+                VALIDATE_EVENT = setting[type];
+                break;
             }
         }
         //バリデーションのバインド
@@ -345,10 +348,10 @@
          * グローバル変数で定義したエラーセレクタがdocumentに存在している場合は
          * エラーとし、送信を中断します。
          */
-        this.bind('submit', function() {
+        this.on('submit', function() {
             //バリデーション用イベントを発生させる
             var events = VALIDATE_EVENT.split(' ');
-            $('form input').trigger(events[0]);
+            $(this).find('input').trigger(events[0]);
             var err = $(ERROR_SELECTOR);
             if(err.length > 0) {
                 if(ERROR_ALERT) {
